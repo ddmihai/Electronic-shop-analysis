@@ -22,7 +22,6 @@ null_value_delivery_date = df_sales['Delivery Date'].isnull().mean() * 100
 
 df_sales['order_month'] = df_sales['Order Date'].dt.to_period('M')
 df_sales['order_year'] = df_sales['Order Date'].dt.year
-df_sales.head()
 
 for col in ['Unit Cost USD', 'Unit Price USD']:
     df_products[col] = (
@@ -36,12 +35,9 @@ for col in ['Unit Cost USD', 'Unit Price USD']:
 for col in ['Unit Cost USD', 'Unit Price USD']:
     df_products[col] = pd.to_numeric(df_products[col], errors='coerce')
 
-df_products.head()
 
 
-df_customers.head()
 df_customers['Birthday'] = pd.to_datetime(df_customers['Birthday'])
-df_customers.head()
 
 
 df_stores['Open Date'] = pd.to_datetime(df_stores['Open Date'])
@@ -50,9 +46,6 @@ main_df = pd.merge(df_sales, df_products, how='left', on='ProductKey')
 
 
 
-# del main_df['Currency Code']
-# del main_df['SubcategoryKey']
-# del main_df['CategoryKey']
 
 main_df['Revenue'] = main_df['Quantity'] * main_df['Unit Price USD']
 main_df['Profit'] = (main_df['Quantity'] * main_df['Unit Price USD']) - (main_df['Quantity'] * main_df['Unit Cost USD'])
@@ -66,7 +59,7 @@ main_df['Profit Margin'] = np.where(
     0
 )
 
-main_df.head()
+
 
 
 
@@ -100,3 +93,26 @@ volatility_years['CV'] = (volatility_years['std'] / volatility_years['mean']) * 
 volatility_years.rename(columns={'order_year': 'Year'}, inplace=True)
 volatility_years = volatility_years.sort_values('CV', ascending=False)
 
+
+
+
+# merge customers
+main_df = pd.merge(main_df, df_customers, on='CustomerKey', how='left')
+
+
+
+# countries and cities
+# top and lowest earning countries
+top_five_revenue_countries = (
+    main_df.groupby('Country')[['Quantity', 'Revenue', 'Profit']]
+    .sum()
+    .sort_values('Revenue', ascending=False)
+    .reset_index()
+    .head(5)
+)
+# top_five_revenue_countries = main_df.groupby(['Country'])[['Quantity', 'Revenue', 'Profit']].sum().sort_values('Revenue', ascending=False).reset_index().head(5)
+lowest_five_revenue_countries = main_df.groupby(['Country'])[['Quantity', 'Revenue', 'Profit']].sum().sort_values('Revenue', ascending=True).reset_index().head(5)
+
+
+top_five_revenue_cities = main_df.groupby(['City'])[['Quantity', 'Revenue', 'Profit']].sum().sort_values('Revenue', ascending=False).reset_index().head(5)
+lowest_five_revenue_cities = main_df.groupby(['City'])[['Quantity', 'Revenue', 'Profit']].sum().sort_values('Revenue', ascending=True).reset_index().head(5)

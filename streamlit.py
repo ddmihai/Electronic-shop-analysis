@@ -72,3 +72,53 @@ top_products_display['Cost'] = top_products_display['Cost'].apply(lambda x: nume
 
 st.dataframe(top_products_display, width='stretch', height='auto')
 
+
+
+
+st.divider()
+st.header('Revenue by location')
+col7, col8 = st.columns(2)
+
+# with col 7 add a dropdown with option 'Lowest countries' and 'Top countries'
+with col7:
+    top_lower = st.selectbox(
+        'Select Option',
+        ['Top Countries', 'Lowest Countries'],
+        key='country_selector'
+    )
+    if top_lower == 'Top Countries':
+        fig = px.bar(
+            top_five_revenue_countries,
+            x='Country',
+            y='Revenue',
+            title='Top 5 Countries by Revenue'
+        )
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        fig = px.bar(
+            lowest_five_revenue_countries,
+            x='Country',
+            y='Revenue',
+            title='Lowest 5 Countries by Revenue'
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+# top_five_revenue_cities, lowest_five_revenue_cities col8 display with toggle
+with col8:
+    cities_toggle = st.selectbox('Select Option', ['Top Cities', 'Lowest Cities'], key='city_selector')
+    if cities_toggle == 'Top Cities':
+        fig = px.bar(
+            top_five_revenue_cities,
+            x='City',
+            y='Revenue',
+            title='Top 5 Cities by Revenue'
+        )
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        fig = px.bar(
+            lowest_five_revenue_cities,
+            x='City',
+            y='Revenue',
+            title='Lowest 5 Cities by Revenue'
+        )
+        st.plotly_chart(fig, use_container_width=True)
