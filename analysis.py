@@ -116,3 +116,40 @@ lowest_five_revenue_countries = main_df.groupby(['Country'])[['Quantity', 'Reven
 
 top_five_revenue_cities = main_df.groupby(['City'])[['Quantity', 'Revenue', 'Profit']].sum().sort_values('Revenue', ascending=False).reset_index().head(5)
 lowest_five_revenue_cities = main_df.groupby(['City'])[['Quantity', 'Revenue', 'Profit']].sum().sort_values('Revenue', ascending=True).reset_index().head(5)
+
+
+
+
+# category performance
+category_perf = (
+    main_df.groupby("Category")[["Revenue", "Profit"]]
+    .sum()
+    .sort_values("Revenue", ascending=False)
+    .reset_index()
+)
+
+# category profit margin
+category_margin = category_perf.copy()
+category_margin["Margin %"] = (
+    category_margin["Profit"] / category_margin["Revenue"] * 100
+)
+
+
+
+monthly = (
+    main_df.groupby("order_month")["Revenue"]
+    .sum()
+    .reset_index()
+)
+
+monthly["order_month"] = monthly["order_month"].astype(str)
+
+category_margin = (
+    main_df.groupby("Category")[["Revenue","Profit"]]
+    .sum()
+    .reset_index()
+)
+
+category_margin["Margin %"] = (
+    category_margin["Profit"] / category_margin["Revenue"] * 100
+)

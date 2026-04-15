@@ -31,11 +31,14 @@ st.markdown("### Yearly Performance Overview")
 st.write("Analyse revenue for each year. Please select the dropdown for specific years")
 col5, col6 = st.columns(2)
 with col5:
-    year = st.selectbox("Select Year",sorted(year_month['order_year'].unique()))
+    year = st.selectbox("Select Year", sorted(year_month['order_year'].unique()))
     df_year = year_month[year_month['order_year'] == year].copy()
+    # Sort first using the period column
     df_year = df_year.sort_values('order_month')
-    df_year['order_month'] = df_year['order_month'].dt.strftime('%b')
-    st.bar_chart(df_year.set_index('order_month')['Revenue'])
+    # Create label column for display
+    df_year['month_label'] = df_year['order_month'].dt.strftime('%b %Y')
+    st.bar_chart(df_year.set_index('month_label')['Revenue'])
+
 
 # Volatility years
 with col6:
@@ -122,3 +125,46 @@ with col8:
             title='Lowest 5 Cities by Revenue'
         )
         st.plotly_chart(fig, use_container_width=True)
+
+
+
+st.divider()
+
+st.header("Category and Revenue Insights")
+st.write("Explore category performance, profitability and revenue trends over time.")
+
+# First row → category insights
+col9, col10 = st.columns(2)
+
+with col9:
+    fig = px.bar(
+        category_perf,
+        x="Category",
+        y="Revenue",
+        title="Revenue by Category"
+    )
+    fig.update_layout(height=420)
+    st.plotly_chart(fig, use_container_width=True)
+
+with col10:
+    fig = px.bar(
+        category_margin,
+        x="Category",
+        y="Margin %",
+        title="Profit Margin by Category"
+    )
+    fig.update_layout(height=420)
+    st.plotly_chart(fig, use_container_width=True)
+
+
+# Second row → time trend (full width)
+fig = px.line(
+    monthly,
+    x="order_month",
+    y="Revenue",
+    title="Revenue Trend Over Time"
+)
+
+fig.update_layout(height=450)
+st.divider()
+st.plotly_chart(fig, use_container_width=True)
